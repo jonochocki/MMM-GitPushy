@@ -1,0 +1,39 @@
+# ---- MagicMirror / Node ----
+node_modules/
+.cache/
+logs/
+
+# MagicMirror runtime config (keep samples in repo)
+config/config.js
+config/config.js.*
+config/*.local.js
+config/*.local.json
+
+# If this repo is ever used inside a full MagicMirror checkout
+modules/
+
+# ---- Env / secrets ----
+.env
+.env.*
+!.env.example
+
+# ---- Logs ----
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Editor / IDE ----
+.vscode/
+.idea/
+*.swp
+
+# ---- macOS ----
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100/
+.Trashes/

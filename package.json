@@ -1,0 +1,16 @@
+{
+  "name": "mmm-gitpushy",
+  "version": "0.1.0",
+  "description": "MagicMirror module for displaying open GitHub pull requests.",
+  "main": "MMM-GitPushy.js",
+  "keywords": [
+    "magicmirror",
+    "github",
+    "pull-requests"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
