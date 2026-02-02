@@ -170,22 +170,6 @@ Module.register("MMM-GitPushy", {
     }
 
     if (this.config.display.showAuthorAvatar) {
-      if (!pr.authorAvatarUrl) {
-        console.warn("MMM-GitPushy: Missing author avatar", {
-          repo: pr.repo,
-          number: pr.number,
-          authorLogin: pr.authorLogin,
-          authorAvatarUrl: pr.authorAvatarUrl
-        });
-      } else {
-        console.info("MMM-GitPushy: Author avatar", {
-          repo: pr.repo,
-          number: pr.number,
-          authorLogin: pr.authorLogin,
-          authorAvatarUrl: pr.authorAvatarUrl
-        });
-      }
-
       if (pr.authorAvatarUrl) {
         const avatar = document.createElement("img");
         avatar.className = "gitpushy-avatar";
