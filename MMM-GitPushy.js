@@ -22,6 +22,7 @@ Module.register("MMM-GitPushy", {
       timeFormat: "relative",
       showAdditionsDeletions: true,
       showFilesChanged: true,
+      showAuthorAvatar: true,
       truncateTitleAt: 90
     },
 
@@ -168,15 +169,33 @@ Module.register("MMM-GitPushy", {
       line.appendChild(meta);
     }
 
-    if (this.config.display.showAuthorAvatar && pr.authorAvatarUrl) {
-      const avatar = document.createElement("img");
-      avatar.className = "gitpushy-avatar";
-      avatar.src = pr.authorAvatarUrl;
-      avatar.alt = pr.authorLogin ? `${pr.authorLogin} avatar` : "PR author";
-      if (pr.authorLogin) {
-        avatar.title = pr.authorLogin;
+    if (this.config.display.showAuthorAvatar) {
+      if (!pr.authorAvatarUrl) {
+        console.warn("MMM-GitPushy: Missing author avatar", {
+          repo: pr.repo,
+          number: pr.number,
+          authorLogin: pr.authorLogin,
+          authorAvatarUrl: pr.authorAvatarUrl
+        });
+      } else {
+        console.info("MMM-GitPushy: Author avatar", {
+          repo: pr.repo,
+          number: pr.number,
+          authorLogin: pr.authorLogin,
+          authorAvatarUrl: pr.authorAvatarUrl
+        });
       }
-      line.appendChild(avatar);
+
+      if (pr.authorAvatarUrl) {
+        const avatar = document.createElement("img");
+        avatar.className = "gitpushy-avatar";
+        avatar.src = pr.authorAvatarUrl;
+        avatar.alt = pr.authorLogin ? `${pr.authorLogin} avatar` : "PR author";
+        if (pr.authorLogin) {
+          avatar.title = pr.authorLogin;
+        }
+        line.appendChild(avatar);
+      }
     }
 
     row.appendChild(line);

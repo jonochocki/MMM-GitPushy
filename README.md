@@ -76,6 +76,7 @@ config: {
     showAdditionsDeletions: true,    // green + / red -
     showFilesChanged: true,
     showAuthorAvatar: true,          // show PR author avatar
+    debugAuthorAvatar: false,        // console warning when avatar data is missing
     truncateTitleAt: 90
   },
 
