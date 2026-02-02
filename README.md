@@ -75,6 +75,8 @@ config: {
     timeFormat: "relative",          // "relative" | "absolute"
     showAdditionsDeletions: true,    // green + / red -
     showFilesChanged: true,
+    showAuthorAvatar: true,          // show PR author avatar
+    avatarSize: 28,                  // px
     singleLine: true,
     truncateTitleAt: 90
   },
@@ -107,6 +109,7 @@ Per PR (enough for the default UI):
 - `html_url` (optional; future click-to-open)
 - `updated_at` / `created_at`
 - `additions`, `deletions`, `changed_files`
+- `authorLogin`, `authorAvatarUrl`
 - `draft` (to filter if includeDrafts is false)
 - `base.ref` (for branch filtering)
 

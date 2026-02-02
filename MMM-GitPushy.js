@@ -170,6 +170,22 @@ Module.register("MMM-GitPushy", {
         line.appendChild(meta);
       }
 
+      if (this.config.display.showAuthorAvatar && pr.authorAvatarUrl) {
+        const avatar = document.createElement("img");
+        avatar.className = "gitpushy-avatar";
+        avatar.src = pr.authorAvatarUrl;
+        avatar.alt = pr.authorLogin ? `${pr.authorLogin} avatar` : "PR author";
+        if (pr.authorLogin) {
+          avatar.title = pr.authorLogin;
+        }
+        if (Number.isFinite(this.config.display.avatarSize)) {
+          const size = `${this.config.display.avatarSize}px`;
+          avatar.style.width = size;
+          avatar.style.height = size;
+        }
+        line.appendChild(avatar);
+      }
+
       row.appendChild(line);
       return row;
     }
