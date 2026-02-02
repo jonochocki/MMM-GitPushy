@@ -151,18 +151,19 @@ Module.register("MMM-GitPushy", {
 
     if (this.config.display.singleLine) {
       const line = document.createElement("div");
-      line.className = "gitpushy-line";
+      line.className = "gitpushy-line gitpushy-pill";
 
-      const leadingParts = [];
       if (this.config.display.showRepoName) {
-        leadingParts.push(pr.repoLabel || pr.repo);
+        const repo = document.createElement("span");
+        repo.className = "gitpushy-repo";
+        repo.textContent = pr.repoLabel || pr.repo;
+        line.appendChild(repo);
       }
-      leadingParts.push(title);
 
-      const leading = document.createElement("span");
-      leading.className = "gitpushy-leading";
-      leading.textContent = leadingParts.join(" — ");
-      line.appendChild(leading);
+      const titleNode = document.createElement("span");
+      titleNode.className = "gitpushy-title-text";
+      titleNode.textContent = title;
+      line.appendChild(titleNode);
 
       const meta = this.buildMeta(pr);
       if (meta) {
@@ -192,13 +193,72 @@ Module.register("MMM-GitPushy", {
   },
 
   buildMeta(pr) {
-    const metaParts = [];
-
-    if (
+    const hasDiff =
       this.config.display.showAdditionsDeletions &&
       Number.isFinite(pr.additions) &&
-      Number.isFinite(pr.deletions)
-    ) {
+      Number.isFinite(pr.deletions);
+    const hasFiles =
+      this.config.display.showFilesChanged &&
+      Number.isFinite(pr.changed_files);
+    const hasTime = this.config.display.showTimestamp;
+
+    if (this.config.display.singleLine) {
+      const container = document.createElement("div");
+      container.className = "gitpushy-meta-pills";
+
+      if (hasDiff || hasFiles) {
+        const diff = document.createElement("span");
+        diff.className = "gitpushy-pill gitpushy-pill-diff";
+
+        if (hasDiff) {
+          const additions = document.createElement("span");
+          additions.className = "gitpushy-additions";
+          additions.textContent = `+${pr.additions}`;
+
+          const deletions = document.createElement("span");
+          deletions.className = "gitpushy-deletions";
+          deletions.textContent = `-${pr.deletions}`;
+
+          diff.appendChild(additions);
+          diff.appendChild(document.createTextNode(" / "));
+          diff.appendChild(deletions);
+        }
+
+        if (hasFiles) {
+          const files = document.createElement("span");
+          files.className = "gitpushy-files";
+          files.textContent = `${pr.changed_files} files`;
+
+          if (hasDiff) {
+            diff.appendChild(document.createTextNode(" • "));
+          }
+          diff.appendChild(files);
+        }
+
+        container.appendChild(diff);
+      }
+
+      if (hasTime) {
+        const field = this.config.display.timestampField;
+        const timestamp = pr[field] || pr.updated_at;
+        if (timestamp) {
+          const time = document.createElement("span");
+          time.className = "gitpushy-pill gitpushy-pill-time";
+          time.textContent = this.formatTime(timestamp);
+          container.appendChild(time);
+        }
+      }
+
+      if (!container.childNodes.length) {
+        return null;
+      }
+
+      return container;
+    }
+
+    const metaParts = [];
+
+    if (hasDiff) {
       const additions = document.createElement("span");
       additions.className = "gitpushy-additions";
       additions.textContent = `+${pr.additions}`;
@@ -215,17 +275,14 @@ Module.register("MMM-GitPushy", {
       metaParts.push(container);
     }
 
-    if (
-      this.config.display.showFilesChanged &&
-      Number.isFinite(pr.changed_files)
-    ) {
+    if (hasFiles) {
       const files = document.createElement("span");
       files.className = "gitpushy-files";
       files.textContent = `${pr.changed_files} files`;
       metaParts.push(files);
     }
 
-    if (this.config.display.showTimestamp) {
+    if (hasTime) {
       const field = this.config.display.timestampField;
       const timestamp = pr[field] || pr.updated_at;
       if (timestamp) {
@@ -249,15 +306,6 @@ Module.register("MMM-GitPushy", {
       }
       meta.appendChild(part);
     });
-
-    if (this.config.display.singleLine) {
-      const wrapper = document.createElement("span");
-      wrapper.className = "gitpushy-meta-inline";
-      wrapper.appendChild(document.createTextNode(" ("));
-      wrapper.appendChild(meta);
-      wrapper.appendChild(document.createTextNode(")"));
-      return wrapper;
-    }
 
     return meta;
   },
