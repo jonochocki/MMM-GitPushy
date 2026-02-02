@@ -24,8 +24,6 @@ const DEFAULT_CONFIG = {
     showAdditionsDeletions: true,
     showFilesChanged: true,
     showAuthorAvatar: true,
-    avatarSize: 28,
-    singleLine: true,
     truncateTitleAt: 90
   },
 
@@ -231,8 +229,11 @@ module.exports = NodeHelper.create({
         html_url: pr.html_url,
         updated_at: pr.updated_at,
         created_at: pr.created_at,
-        authorLogin: pr.user ? pr.user.login : null,
-        authorAvatarUrl: pr.user ? pr.user.avatar_url : null,
+        authorLogin: (pr.user && pr.user.login) || (details.user && details.user.login) || null,
+        authorAvatarUrl:
+          (pr.user && pr.user.avatar_url) ||
+          (details.user && details.user.avatar_url) ||
+          null,
         additions: details.additions,
         deletions: details.deletions,
         changed_files: details.changed_files,

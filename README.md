@@ -76,8 +76,6 @@ config: {
     showAdditionsDeletions: true,    // green + / red -
     showFilesChanged: true,
     showAuthorAvatar: true,          // show PR author avatar
-    avatarSize: 28,                  // px
-    singleLine: true,
     truncateTitleAt: 90
   },
 

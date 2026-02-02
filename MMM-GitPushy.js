@@ -22,7 +22,6 @@ Module.register("MMM-GitPushy", {
       timeFormat: "relative",
       showAdditionsDeletions: true,
       showFilesChanged: true,
-      singleLine: true,
       truncateTitleAt: 90
     },
 
@@ -149,61 +148,38 @@ Module.register("MMM-GitPushy", {
 
     const title = this.truncate(pr.title, this.config.display.truncateTitleAt);
 
-    if (this.config.display.singleLine) {
-      const line = document.createElement("div");
-      line.className = "gitpushy-line gitpushy-pill";
+    const line = document.createElement("div");
+    line.className = "gitpushy-line gitpushy-pill";
 
-      if (this.config.display.showRepoName) {
-        const repo = document.createElement("span");
-        repo.className = "gitpushy-repo";
-        repo.textContent = pr.repoLabel || pr.repo;
-        line.appendChild(repo);
-      }
-
-      const titleNode = document.createElement("span");
-      titleNode.className = "gitpushy-title-text";
-      titleNode.textContent = title;
-      line.appendChild(titleNode);
-
-      const meta = this.buildMeta(pr);
-      if (meta) {
-        line.appendChild(meta);
-      }
-
-      if (this.config.display.showAuthorAvatar && pr.authorAvatarUrl) {
-        const avatar = document.createElement("img");
-        avatar.className = "gitpushy-avatar";
-        avatar.src = pr.authorAvatarUrl;
-        avatar.alt = pr.authorLogin ? `${pr.authorLogin} avatar` : "PR author";
-        if (pr.authorLogin) {
-          avatar.title = pr.authorLogin;
-        }
-        if (Number.isFinite(this.config.display.avatarSize)) {
-          const size = `${this.config.display.avatarSize}px`;
-          avatar.style.width = size;
-          avatar.style.height = size;
-        }
-        line.appendChild(avatar);
-      }
-
-      row.appendChild(line);
-      return row;
-    }
-
-    const titleLine = document.createElement("div");
-    titleLine.className = "gitpushy-title";
-    const titleParts = [];
     if (this.config.display.showRepoName) {
-      titleParts.push(pr.repoLabel || pr.repo);
+      const repo = document.createElement("span");
+      repo.className = "gitpushy-repo";
+      repo.textContent = pr.repoLabel || pr.repo;
+      line.appendChild(repo);
     }
-    titleParts.push(title);
-    titleLine.textContent = titleParts.join(" — ");
-    row.appendChild(titleLine);
+
+    const titleNode = document.createElement("span");
+    titleNode.className = "gitpushy-title-text";
+    titleNode.textContent = title;
+    line.appendChild(titleNode);
 
     const meta = this.buildMeta(pr);
     if (meta) {
-      row.appendChild(meta);
+      line.appendChild(meta);
     }
+
+    if (this.config.display.showAuthorAvatar && pr.authorAvatarUrl) {
+      const avatar = document.createElement("img");
+      avatar.className = "gitpushy-avatar";
+      avatar.src = pr.authorAvatarUrl;
+      avatar.alt = pr.authorLogin ? `${pr.authorLogin} avatar` : "PR author";
+      if (pr.authorLogin) {
+        avatar.title = pr.authorLogin;
+      }
+      line.appendChild(avatar);
+    }
+
+    row.appendChild(line);
 
     return row;
   },
@@ -218,84 +194,39 @@ Module.register("MMM-GitPushy", {
       Number.isFinite(pr.changed_files);
     const hasTime = this.config.display.showTimestamp;
 
-    if (this.config.display.singleLine) {
-      const container = document.createElement("div");
-      container.className = "gitpushy-meta-pills";
+    const container = document.createElement("div");
+    container.className = "gitpushy-meta-pills";
 
-      if (hasDiff || hasFiles) {
-        const diff = document.createElement("span");
-        diff.className = "gitpushy-pill gitpushy-pill-diff";
+    if (hasDiff || hasFiles) {
+      const diff = document.createElement("span");
+      diff.className = "gitpushy-pill gitpushy-pill-diff";
+
+      if (hasDiff) {
+        const additions = document.createElement("span");
+        additions.className = "gitpushy-additions";
+        additions.textContent = `+${pr.additions}`;
+
+        const deletions = document.createElement("span");
+        deletions.className = "gitpushy-deletions";
+        deletions.textContent = `-${pr.deletions}`;
+
+        diff.appendChild(additions);
+        diff.appendChild(document.createTextNode(" / "));
+        diff.appendChild(deletions);
+      }
+
+      if (hasFiles) {
+        const files = document.createElement("span");
+        files.className = "gitpushy-files";
+        files.textContent = `${pr.changed_files} files`;
 
         if (hasDiff) {
-          const additions = document.createElement("span");
-          additions.className = "gitpushy-additions";
-          additions.textContent = `+${pr.additions}`;
-
-          const deletions = document.createElement("span");
-          deletions.className = "gitpushy-deletions";
-          deletions.textContent = `-${pr.deletions}`;
-
-          diff.appendChild(additions);
-          diff.appendChild(document.createTextNode(" / "));
-          diff.appendChild(deletions);
+          diff.appendChild(document.createTextNode(" • "));
         }
-
-        if (hasFiles) {
-          const files = document.createElement("span");
-          files.className = "gitpushy-files";
-          files.textContent = `${pr.changed_files} files`;
-
-          if (hasDiff) {
-            diff.appendChild(document.createTextNode(" • "));
-          }
-          diff.appendChild(files);
-        }
-
-        container.appendChild(diff);
+        diff.appendChild(files);
       }
 
-      if (hasTime) {
-        const field = this.config.display.timestampField;
-        const timestamp = pr[field] || pr.updated_at;
-        if (timestamp) {
-          const time = document.createElement("span");
-          time.className = "gitpushy-pill gitpushy-pill-time";
-          time.textContent = this.formatTime(timestamp);
-          container.appendChild(time);
-        }
-      }
-
-      if (!container.childNodes.length) {
-        return null;
-      }
-
-      return container;
-    }
-
-    const metaParts = [];
-
-    if (hasDiff) {
-      const additions = document.createElement("span");
-      additions.className = "gitpushy-additions";
-      additions.textContent = `+${pr.additions}`;
-
-      const deletions = document.createElement("span");
-      deletions.className = "gitpushy-deletions";
-      deletions.textContent = `-${pr.deletions}`;
-
-      const container = document.createElement("span");
-      container.className = "gitpushy-diff";
-      container.appendChild(additions);
-      container.appendChild(document.createTextNode(" / "));
-      container.appendChild(deletions);
-      metaParts.push(container);
-    }
-
-    if (hasFiles) {
-      const files = document.createElement("span");
-      files.className = "gitpushy-files";
-      files.textContent = `${pr.changed_files} files`;
-      metaParts.push(files);
+      container.appendChild(diff);
     }
 
     if (hasTime) {
@@ -303,27 +234,17 @@ Module.register("MMM-GitPushy", {
       const timestamp = pr[field] || pr.updated_at;
       if (timestamp) {
         const time = document.createElement("span");
-        time.className = "gitpushy-time";
+        time.className = "gitpushy-pill gitpushy-pill-time";
         time.textContent = this.formatTime(timestamp);
-        metaParts.push(time);
+        container.appendChild(time);
       }
     }
 
-    if (metaParts.length === 0) {
+    if (!container.childNodes.length) {
       return null;
     }
 
-    const meta = document.createElement("div");
-    meta.className = "gitpushy-meta";
-
-    metaParts.forEach((part, index) => {
-      if (index > 0) {
-        meta.appendChild(document.createTextNode(" • "));
-      }
-      meta.appendChild(part);
-    });
-
-    return meta;
+    return container;
   },
 
   formatTime(timestamp) {
