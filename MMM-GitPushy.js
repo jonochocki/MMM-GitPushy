@@ -3,6 +3,7 @@
 Module.register("MMM-GitPushy", {
   defaults: {
     auth: {
+      token: null,
       tokenEnvVar: "GITHUB_TOKEN",
       apiBaseUrl: "https://api.github.com"
     },

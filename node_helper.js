@@ -3,6 +3,7 @@ const fetch = require("node-fetch");
 
 const DEFAULT_CONFIG = {
   auth: {
+    token: null,
     tokenEnvVar: "GITHUB_TOKEN",
     apiBaseUrl: "https://api.github.com"
   },
@@ -108,7 +109,7 @@ module.exports = NodeHelper.create({
     if (!token && config.alerts.showOnAuthError) {
       this.sendSocketNotification("GITPUSHY_ERROR", {
         instanceId,
-        message: `Missing GitHub token in env var ${config.auth.tokenEnvVar}.`,
+        message: `Missing GitHub token (set auth.token or env var ${config.auth.tokenEnvVar}).`,
         prs: this.getCachedData(instanceId)
       });
       return;
@@ -147,6 +148,10 @@ module.exports = NodeHelper.create({
   },
 
   getAuthToken(config) {
+    if (config.auth.token && String(config.auth.token).trim().length > 0) {
+      return config.auth.token;
+    }
+
     const envVar = config.auth.tokenEnvVar;
     return envVar ? process.env[envVar] : null;
   },

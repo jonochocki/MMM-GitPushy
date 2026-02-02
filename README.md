@@ -17,7 +17,9 @@ cd MagicMirror/modules/MMM-GitPushy
 npm install
 ```
 
-3. Set a GitHub token env var (defaults to `GITHUB_TOKEN`).
+3. Provide a GitHub token:
+   - Either set `auth.token` directly in the module config, or
+   - Set a GitHub token env var (defaults to `GITHUB_TOKEN`).
    - For private repos, the token must have access to the repo (typically `repo` scope for classic tokens).
 
 ## Minimal Config
@@ -27,7 +29,7 @@ npm install
   module: "MMM-GitPushy",
   position: "bottom_bar",
   config: {
-    auth: { tokenEnvVar: "GITHUB_TOKEN" },
+    auth: { token: "ghp_XXXXXXXXXXXXXXXXXXXX" },
     targets: [
       { owner: "your-org", repo: "chicle-menu-builder", displayName: "Chicle" }
     ]
@@ -40,6 +42,7 @@ npm install
 ```js
 config: {
   auth: {
+    token: "ghp_XXXXXXXXXXXXXXXXXXXX",
     tokenEnvVar: "GITHUB_TOKEN",
     apiBaseUrl: "https://api.github.com"
   },
