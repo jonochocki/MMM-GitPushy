@@ -1,4 +1,5 @@
 const NodeHelper = require("node_helper");
+const Log = require("logger");
 const fetch = require("node-fetch");
 
 const DEFAULT_CONFIG = {
@@ -281,7 +282,7 @@ module.exports = NodeHelper.create({
       });
       return defaultBranch ? [defaultBranch] : [];
     } catch (error) {
-      this.log(`Failed to resolve default branch for ${cacheKey}: ${error}`);
+      Log.warn(`MMM-GitPushy: Failed to resolve default branch for ${cacheKey}: ${error}`);
       return [];
     }
   },
