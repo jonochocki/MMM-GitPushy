@@ -37,6 +37,8 @@ Module.register("MMM-GitPushy", {
 
     refresh: {
       updateIntervalMs: 300000,
+      listCacheTtlMs: null,
+      detailsCacheTtlMs: null,
       backoffOnRateLimit: true
     },
 

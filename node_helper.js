@@ -38,6 +38,8 @@ const DEFAULT_CONFIG = {
 
   refresh: {
     updateIntervalMs: 300000,
+    listCacheTtlMs: null,
+    detailsCacheTtlMs: null,
     backoffOnRateLimit: true
   },
 
@@ -182,6 +184,8 @@ module.exports = NodeHelper.create({
 
     const baseBranches = await this.resolveBaseBranches(target, config, token);
     const listConfigs = baseBranches.length > 0 ? baseBranches : [null];
+    const listTtl = this.getListCacheTtl(config);
+    const detailsTtl = this.getDetailsCacheTtl(config);
 
     const pulls = [];
     for (const base of listConfigs) {
@@ -195,7 +199,7 @@ module.exports = NodeHelper.create({
         listUrl,
         token,
         listCacheKey,
-        config.refresh.updateIntervalMs
+        listTtl
       );
 
       pulls.push(...listData);
@@ -217,7 +221,7 @@ module.exports = NodeHelper.create({
         repo,
         pr.number,
         token,
-        config.refresh.updateIntervalMs
+        detailsTtl
       );
 
       enriched.push({
@@ -296,7 +300,7 @@ module.exports = NodeHelper.create({
     const seen = new Set();
     const unique = [];
     pulls.forEach((pr) => {
-      const key = pr.number;
+      const key = `${pr.base && pr.base.repo ? pr.base.repo.full_name : ""}#${pr.number}`;
       if (seen.has(key)) {
         return;
       }
@@ -336,6 +340,30 @@ module.exports = NodeHelper.create({
     }
 
     return all;
+  },
+
+  getListCacheTtl(config) {
+    const explicit = config.refresh.listCacheTtlMs;
+    if (Number.isFinite(explicit) && explicit >= 0) {
+      return explicit;
+    }
+    const interval = config.refresh.updateIntervalMs;
+    if (!Number.isFinite(interval) || interval <= 0) {
+      return 0;
+    }
+    return Math.max(0, interval - 10000);
+  },
+
+  getDetailsCacheTtl(config) {
+    const explicit = config.refresh.detailsCacheTtlMs;
+    if (Number.isFinite(explicit) && explicit >= 0) {
+      return explicit;
+    }
+    const interval = config.refresh.updateIntervalMs;
+    if (!Number.isFinite(interval) || interval <= 0) {
+      return 0;
+    }
+    return interval;
   },
 
   async httpGet(url, token, cacheKey, ttl, includePagination = false) {
