@@ -91,6 +91,8 @@ config: {
 
   refresh: {
     updateIntervalMs: 300000,
+    listCacheTtlMs: null,            // defaults to updateIntervalMs - 10s
+    detailsCacheTtlMs: null,         // defaults to updateIntervalMs
     backoffOnRateLimit: true
   },
 
@@ -115,7 +117,7 @@ Per PR (enough for the default UI):
 ## Implementation Notes
 - All GitHub calls are done in `node_helper.js` so tokens never reach the browser.
 - PRs are filtered by base branch (no branch scanning).
-- Per-repo caching uses ETags to reduce rate usage.
+- Per-repo caching uses ETags to reduce rate usage; list and details TTLs are configurable.
 - Socket payloads include `instanceId` so multiple module instances can coexist.
 
 ## Troubleshooting
