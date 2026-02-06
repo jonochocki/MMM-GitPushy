@@ -37,7 +37,7 @@ const DEFAULT_CONFIG = {
   },
 
   refresh: {
-    updateIntervalMs: 300000,
+    updateIntervalMs: 60000,
     listCacheTtlMs: null,
     detailsCacheTtlMs: null,
     backoffOnRateLimit: true

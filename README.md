@@ -77,7 +77,8 @@ config: {
     showFilesChanged: true,
     showAuthorAvatar: true,          // show PR author avatar
     debugAuthorAvatar: false,        // console warning when avatar data is missing
-    truncateTitleAt: 90
+    truncateTitleAt: 90,
+    showEmptyMessage: false          // when false, module renders blank for 0 PRs
   },
 
   grouping: {
@@ -90,7 +91,7 @@ config: {
   },
 
   refresh: {
-    updateIntervalMs: 300000,
+    updateIntervalMs: 60000,
     listCacheTtlMs: null,            // defaults to updateIntervalMs - 10s
     detailsCacheTtlMs: null,         // defaults to updateIntervalMs
     backoffOnRateLimit: true
