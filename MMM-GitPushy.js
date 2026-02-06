@@ -44,6 +44,10 @@ Module.register("MMM-GitPushy", {
 
     alerts: {
       showOnAuthError: true
+    },
+
+    debug: {
+      logApiResponses: false
     }
   },
 
@@ -291,6 +295,12 @@ Module.register("MMM-GitPushy", {
         this.prs = payload.prs;
       }
       this.updateDom(300);
+      return;
+    }
+
+    if (notification === "GITPUSHY_DEBUG") {
+      // eslint-disable-next-line no-console
+      console.log("[MMM-GitPushy] API response", payload);
     }
   }
 });
