@@ -23,7 +23,8 @@ Module.register("MMM-GitPushy", {
       showAdditionsDeletions: true,
       showFilesChanged: true,
       showAuthorAvatar: true,
-      truncateTitleAt: 90
+      truncateTitleAt: 90,
+      showEmptyMessage: false
     },
 
     grouping: {
@@ -36,7 +37,7 @@ Module.register("MMM-GitPushy", {
     },
 
     refresh: {
-      updateIntervalMs: 300000,
+      updateIntervalMs: 60000,
       listCacheTtlMs: null,
       detailsCacheTtlMs: null,
       backoffOnRateLimit: true
@@ -105,6 +106,9 @@ Module.register("MMM-GitPushy", {
     }
 
     if (this.prs.length === 0) {
+      if (!this.config.display.showEmptyMessage) {
+        return wrapper;
+      }
       const empty = document.createElement("div");
       empty.className = "gitpushy-empty";
       empty.textContent = "No pull requests.";
