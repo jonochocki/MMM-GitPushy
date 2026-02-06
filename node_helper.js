@@ -45,6 +45,10 @@ const DEFAULT_CONFIG = {
 
   alerts: {
     showOnAuthError: true
+  },
+
+  debug: {
+    logApiResponses: false
   }
 };
 
@@ -119,7 +123,7 @@ module.exports = NodeHelper.create({
     }
 
     try {
-      const prs = await this.fetchAllTargets(config, token);
+      const prs = await this.fetchAllTargets(config, token, instanceId);
       this.instances.get(instanceId).lastData = prs;
       this.sendSocketNotification("GITPUSHY_DATA", {
         instanceId,
@@ -159,11 +163,11 @@ module.exports = NodeHelper.create({
     return envVar ? process.env[envVar] : null;
   },
 
-  async fetchAllTargets(config, token) {
+  async fetchAllTargets(config, token, instanceId) {
     const results = [];
     const targets = Array.isArray(config.targets) ? config.targets : [];
     for (const target of targets) {
-      const prs = await this.fetchRepoPulls(target, config, token);
+      const prs = await this.fetchRepoPulls(target, config, token, instanceId);
       const limited = prs.slice(0, config.limits.maxPerRepo);
       results.push(...limited);
     }
@@ -177,7 +181,7 @@ module.exports = NodeHelper.create({
     return sorted.slice(0, config.limits.maxTotal);
   },
 
-  async fetchRepoPulls(target, config, token) {
+  async fetchRepoPulls(target, config, token, instanceId) {
     const owner = target.owner;
     const repo = target.repo;
     const repoKey = `${owner}/${repo}`;
@@ -188,6 +192,8 @@ module.exports = NodeHelper.create({
     const detailsTtl = this.getDetailsCacheTtl(config);
 
     const pulls = [];
+    const rawLists = [];
+    const rawDetails = {};
     for (const base of listConfigs) {
       const listUrl = this.buildPullsUrl(config.auth.apiBaseUrl, owner, repo, {
         state: config.query.state,
@@ -202,6 +208,11 @@ module.exports = NodeHelper.create({
         listTtl
       );
 
+      rawLists.push({
+        base: base || null,
+        url: listUrl,
+        data: listData
+      });
       pulls.push(...listData);
     }
 
@@ -223,6 +234,8 @@ module.exports = NodeHelper.create({
         token,
         detailsTtl
       );
+
+      rawDetails[pr.number] = details;
 
       if (!this.matchesStateFilter(details, config.query.state)) {
         continue;
@@ -248,6 +261,17 @@ module.exports = NodeHelper.create({
         changed_files: details.changed_files,
         draft: pr.draft,
         base: pr.base
+      });
+    }
+
+    if (config.debug && config.debug.logApiResponses) {
+      this.sendSocketNotification("GITPUSHY_DEBUG", {
+        instanceId,
+        owner,
+        repo,
+        state: config.query.state,
+        rawLists,
+        rawDetails
       });
     }
 

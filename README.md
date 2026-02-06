@@ -98,6 +98,10 @@ config: {
 
   alerts: {
     showOnAuthError: true
+  },
+
+  debug: {
+    logApiResponses: false
   }
 }
 ```
@@ -124,3 +128,4 @@ Per PR (enough for the default UI):
 ## Troubleshooting
 - If you see `Missing GitHub token`, confirm the env var is set in the same shell/user context as MagicMirror.
 - If you hit a rate limit, the module will pause until the reset time (when backoff is enabled).
+- To see raw GitHub API responses in the browser console, set `debug.logApiResponses: true`.
