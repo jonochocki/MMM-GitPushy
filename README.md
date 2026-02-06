@@ -109,6 +109,7 @@ Per PR (enough for the default UI):
 - `title`
 - `html_url` (optional; future click-to-open)
 - `updated_at` / `created_at`
+- `state`
 - `additions`, `deletions`, `changed_files`
 - `authorLogin`, `authorAvatarUrl`
 - `draft` (to filter if includeDrafts is false)

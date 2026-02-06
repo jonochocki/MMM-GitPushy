@@ -224,6 +224,10 @@ module.exports = NodeHelper.create({
         detailsTtl
       );
 
+      if (!this.matchesStateFilter(details, config.query.state)) {
+        continue;
+      }
+
       enriched.push({
         repo,
         repoLabel: target.displayName || repo,
@@ -233,6 +237,7 @@ module.exports = NodeHelper.create({
         html_url: pr.html_url,
         updated_at: pr.updated_at,
         created_at: pr.created_at,
+        state: details.state || pr.state,
         authorLogin: (pr.user && pr.user.login) || (details.user && details.user.login) || null,
         authorAvatarUrl:
           (pr.user && pr.user.avatar_url) ||
@@ -247,6 +252,18 @@ module.exports = NodeHelper.create({
     }
 
     return enriched;
+  },
+
+  matchesStateFilter(details, state) {
+    const desired = state || "open";
+    if (desired === "all") {
+      return true;
+    }
+    const actual = details && details.state ? details.state : null;
+    if (!actual) {
+      return desired === "open";
+    }
+    return actual === desired;
   },
 
   async resolveBaseBranches(target, config, token) {
